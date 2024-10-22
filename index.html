@@ -22,8 +22,11 @@
             font-size: 2rem;
             margin-bottom: 20px;
         }
-        input[type="checkbox"] {
-            transform: scale(2);
+        .options {
+            margin-bottom: 20px;
+        }
+        .options input[type="radio"] {
+            transform: scale(1.5);
             margin-left: 10px;
         }
         .response-container {
@@ -49,10 +52,14 @@
 </head>
 <body>
     <div class="container">
-        <label for="freeTonight">Are you free tonight?</label><br><br>
-        <input type="checkbox" id="freeTonight">
-        <label for="yes" id="yesLabel">Yes</label>
-        <label for="no">No, I am not as good as you at making websites so I have to work :(</label>
+        <p>Are you free tonight?</p>
+        <div class="options">
+            <input type="radio" name="response" id="yesOption">
+            <label for="yesOption">Yes</label><br>
+            
+            <input type="radio" name="response" id="noOption">
+            <label for="noOption">No, I am not as good as you at making websites so I have to work :(</label>
+        </div>
 
         <div class="response-container" id="responseContainer">
             <input type="text" id="pickupInfo" placeholder="Where and when can I pick you up?"><br>
@@ -81,33 +88,48 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Handle checkbox change
-        document.getElementById('freeTonight').addEventListener('change', function() {
-            const responseContainer = document.getElementById('responseContainer');
-            if (this.checked) {
-                responseContainer.style.display = 'block';
-            } else {
-                responseContainer.style.display = 'none';
+        // Elements
+        const yesOption = document.getElementById('yesOption');
+        const noOption = document.getElementById('noOption');
+        const responseContainer = document.getElementById('responseContainer');
+        const submitBtn = document.getElementById('submitBtn');
+        const pickupInfo = document.getElementById('pickupInfo');
+
+        // Show the input box when "Yes" is selected
+        yesOption.addEventListener('change', function() {
+            if (yesOption.checked) {
+                responseContainer.style.display = 'block';  // Show input field
+            }
+        });
+
+        // Hide the input box if "No" is selected
+        noOption.addEventListener('change', function() {
+            if (noOption.checked) {
+                responseContainer.style.display = 'none';  // Hide input field
             }
         });
 
         // Handle submit button click
-        document.getElementById('submitBtn').addEventListener('click', async function() {
-            const pickupInfo = document.getElementById('pickupInfo').value;
-            if (pickupInfo.trim() !== "") {
-                try {
-                    // Save to Firestore
-                    await addDoc(collection(db, "responses"), {
-                        pickupInfo: pickupInfo,
-                        timestamp: new Date()  // Add a timestamp for records
-                    });
-                    alert('Your response has been saved!');
-                } catch (error) {
-                    console.error('Error saving response: ', error);
-                    alert('Failed to save your response. Try again.');
+        submitBtn.addEventListener('click', async function() {
+            if (yesOption.checked) {
+                const pickupDetails = pickupInfo.value;
+                if (pickupDetails.trim() !== "") {
+                    try {
+                        // Save to Firestore
+                        await addDoc(collection(db, "responses"), {
+                            pickupInfo: pickupDetails,
+                            timestamp: new Date()
+                        });
+                        alert('Your response has been saved!');
+                    } catch (error) {
+                        console.error('Error saving response: ', error);
+                        alert('Failed to save your response. Try again.');
+                    }
+                } else {
+                    alert('Please fill in the details.');
                 }
-            } else {
-                alert('Please fill in the details.');
+            } else if (noOption.checked) {
+                alert('Thanks for letting us know!');
             }
         });
     </script>
