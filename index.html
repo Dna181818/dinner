@@ -88,11 +88,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Ensure Firestore is initialized
-        if (!db) {
-            alert("Failed to initialize Firestore. Please check your Firebase configuration.");
-        }
-
         // Elements
         const yesOption = document.getElementById('yesOption');
         const noOption = document.getElementById('noOption');
@@ -116,16 +111,24 @@
 
         // Handle submit button click
         submitBtn.addEventListener('click', async function() {
+            let selectedOption = "";
             if (yesOption.checked) {
+                selectedOption = "Yes";
+            } else if (noOption.checked) {
+                selectedOption = "No";
+            }
+
+            if (selectedOption === "Yes") {
                 const pickupDetails = pickupInfo.value;
                 if (pickupDetails.trim() !== "") {
                     try {
-                        // Save to Firestore
+                        // Save both the choice and the pickup info to Firestore
                         await addDoc(collection(db, "responses"), {
+                            response: selectedOption,
                             pickupInfo: pickupDetails,
                             timestamp: new Date()  // Add a timestamp for records
                         });
-                        alert('Your response has been saved!');
+                        alert('Your response and details have been saved!');
                     } catch (error) {
                         console.error('Error saving response: ', error);
                         alert('Failed to save your response. Check the console for errors.');
@@ -133,11 +136,20 @@
                 } else {
                     alert('Please fill in the details.');
                 }
-            } else if (noOption.checked) {
-                alert('Thanks for letting us know!');
+            } else if (selectedOption === "No") {
+                try {
+                    // Save the "No" response without pickup details
+                    await addDoc(collection(db, "responses"), {
+                        response: selectedOption,
+                        timestamp: new Date()  // Add a timestamp for records
+                    });
+                    alert('Your response has been saved!');
+                } catch (error) {
+                    console.error('Error saving response: ', error);
+                    alert('Failed to save your response. Check the console for errors.');
+                }
             }
         });
     </script>
 </body>
 </html>
-
