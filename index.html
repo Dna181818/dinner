@@ -73,7 +73,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Your Firebase configuration
+        // Firebase configuration (double-check your credentials here)
         const firebaseConfig = {
             apiKey: "AIzaSyDSDLtxDyZLaI6zZQIj_iNbHRyxHSOEwPw",
             authDomain: "dinner-146cc.firebaseapp.com",
@@ -88,6 +88,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Ensure Firestore is initialized
+        if (!db) {
+            alert("Failed to initialize Firestore. Please check your Firebase configuration.");
+        }
+
         // Elements
         const yesOption = document.getElementById('yesOption');
         const noOption = document.getElementById('noOption');
@@ -95,14 +100,14 @@
         const submitBtn = document.getElementById('submitBtn');
         const pickupInfo = document.getElementById('pickupInfo');
 
-        // Show the input box when "Yes" is selected
+        // Show input box when "Yes" is selected
         yesOption.addEventListener('change', function() {
             if (yesOption.checked) {
                 responseContainer.style.display = 'block';  // Show input field
             }
         });
 
-        // Hide the input box if "No" is selected
+        // Hide input box if "No" is selected
         noOption.addEventListener('change', function() {
             if (noOption.checked) {
                 responseContainer.style.display = 'none';  // Hide input field
@@ -118,12 +123,12 @@
                         // Save to Firestore
                         await addDoc(collection(db, "responses"), {
                             pickupInfo: pickupDetails,
-                            timestamp: new Date()
+                            timestamp: new Date()  // Add a timestamp for records
                         });
                         alert('Your response has been saved!');
                     } catch (error) {
                         console.error('Error saving response: ', error);
-                        alert('Failed to save your response. Try again.');
+                        alert('Failed to save your response. Check the console for errors.');
                     }
                 } else {
                     alert('Please fill in the details.');
@@ -135,3 +140,4 @@
     </script>
 </body>
 </html>
+
