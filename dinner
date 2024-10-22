@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Are you free tonight?</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: black;
+            color: green;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .container {
+            text-align: center;
+        }
+        label {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        input[type="checkbox"] {
+            transform: scale(2);
+            margin-left: 10px;
+        }
+        .response-container {
+            display: none;
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            font-size: 1.5rem;
+            padding: 5px;
+            width: 80%;
+            margin-top: 20px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: green;
+            color: black;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <label for="freeTonight">Are you free tonight?</label><br><br>
+        <input type="checkbox" id="freeTonight">
+        <label for="yes" id="yesLabel">Yes</label>
+        <label for="no">No, I am not as good as you at making websites so I have to work :(</label>
+
+        <div class="response-container" id="responseContainer">
+            <input type="text" id="pickupInfo" placeholder="Where and when can I pick you up?"><br>
+            <button id="submitBtn">Submit</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+    <script>
+       // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDSDLtxDyZLaI6zZQIj_iNbHRyxHSOEwPw",
+  authDomain: "dinner-146cc.firebaseapp.com",
+  projectId: "dinner-146cc",
+  storageBucket: "dinner-146cc.appspot.com",
+  messagingSenderId: "104757467893",
+  appId: "1:104757467893:web:f3223e603ca3783d2003bc",
+  measurementId: "G-BC8N1G7VVJ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
+        // Handle checkbox change
+        document.getElementById('freeTonight').addEventListener('change', function() {
+            const responseContainer = document.getElementById('responseContainer');
+            if (this.checked) {
+                responseContainer.style.display = 'block';
+            } else {
+                responseContainer.style.display = 'none';
+            }
+        });
+
+        // Handle submit button click
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const pickupInfo = document.getElementById('pickupInfo').value;
+            if (pickupInfo.trim() !== "") {
+                db.collection("responses").add({
+                    pickupInfo: pickupInfo,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert('Your response has been saved!');
+                }).catch(error => {
+                    console.error('Error saving response: ', error);
+                });
+            } else {
+                alert('Please fill in the details.');
+            }
+        });
+    </script>
+</body>
+</html>
