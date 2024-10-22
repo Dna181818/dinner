@@ -73,7 +73,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-        // Firebase configuration (double-check your credentials here)
+        // Firebase configuration (replace with your Firebase project's actual configuration)
         const firebaseConfig = {
             apiKey: "AIzaSyDSDLtxDyZLaI6zZQIj_iNbHRyxHSOEwPw",
             authDomain: "dinner-146cc.firebaseapp.com",
@@ -112,21 +112,24 @@
         // Handle submit button click
         submitBtn.addEventListener('click', async function() {
             let selectedOption = "";
+
+            // Determine which option is selected (Yes or No)
             if (yesOption.checked) {
                 selectedOption = "Yes";
             } else if (noOption.checked) {
                 selectedOption = "No";
             }
 
+            // If "Yes" is selected, save both the response and the pickup details
             if (selectedOption === "Yes") {
                 const pickupDetails = pickupInfo.value;
                 if (pickupDetails.trim() !== "") {
                     try {
-                        // Save both the choice and the pickup info to Firestore
+                        // Save both the response and the pickup details to Firestore
                         await addDoc(collection(db, "responses"), {
-                            response: selectedOption,
-                            pickupInfo: pickupDetails,
-                            timestamp: new Date()  // Add a timestamp for records
+                            response: selectedOption,  // Stores "Yes"
+                            pickupInfo: pickupDetails, // Stores pickup details
+                            timestamp: new Date()      // Adds a timestamp
                         });
                         alert('Your response and details have been saved!');
                     } catch (error) {
@@ -136,12 +139,14 @@
                 } else {
                     alert('Please fill in the details.');
                 }
-            } else if (selectedOption === "No") {
+            } 
+            // If "No" is selected, save only the response
+            else if (selectedOption === "No") {
                 try {
-                    // Save the "No" response without pickup details
+                    // Save only the "No" response to Firestore
                     await addDoc(collection(db, "responses"), {
-                        response: selectedOption,
-                        timestamp: new Date()  // Add a timestamp for records
+                        response: selectedOption,  // Stores "No"
+                        timestamp: new Date()      // Adds a timestamp
                     });
                     alert('Your response has been saved!');
                 } catch (error) {
